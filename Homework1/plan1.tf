@@ -15,6 +15,7 @@ variable "aws_region" {
 
 provider "aws" {
   region = var.aws_region
+  profile = "cloud9"
 }
 
 
@@ -50,7 +51,7 @@ resource "aws_instance" "app_server" {
     volume_size = 10
     encrypted   = true
   }
-  user_data = file("init-script.sh")
+  user_data = file("ec2-init-script.sh")
 
   tags = {
     Name    = "Whiskey_website-${count.index}"
