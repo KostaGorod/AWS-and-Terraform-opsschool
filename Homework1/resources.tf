@@ -21,9 +21,9 @@ resource "aws_security_group" "allow_http" {
 }
 
 resource "aws_instance" "app_server" {
-  count                       = 2
-  ami                         = "ami-0b5eea76982371e91"
-  instance_type               = "t3.micro"
+  count                       = var.instance_count
+  ami                         = var.instance_aws_ami
+  instance_type               = var.instance_type
   security_groups             = [aws_security_group.allow_http.name] #can't be declared by id
   user_data_replace_on_change = true
   ebs_block_device {
