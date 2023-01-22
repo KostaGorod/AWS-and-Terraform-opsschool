@@ -1,29 +1,9 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 4.7" #added support for 'user_data_replace_on_change'
-    }
-  }
-}
-
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-east-1"
-}
-
-provider "aws" {
-  region = var.aws_region
-  profile = "cloud9"
-}
 
 
-
-
+  # HTTP access from anywhere
 resource "aws_security_group" "allow_http" {
   name = "allow_http"
-  # HTTP access from anywhere
+
   ingress {
     from_port        = 80
     to_port          = 80
@@ -54,8 +34,8 @@ resource "aws_instance" "app_server" {
   user_data = file("ec2-init-script.sh")
 
   tags = {
-    Name    = "Whiskey_website-${count.index}"
-    Owner   = "Kosta"
-    Purpose = "Whiskey"
+    name    = "Whiskey_website-${count.index}"
+    owner   = "Kosta"
+    purpose = "Whiskey"
   }
 }
