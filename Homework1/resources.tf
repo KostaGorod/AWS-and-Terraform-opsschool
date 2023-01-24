@@ -34,8 +34,8 @@ resource "aws_instance" "app_server" {
   user_data = file("ec2-init-script.sh")
 
   tags = {
-    name    = "Whiskey_website-${count.index}"
-    owner   = "Kosta"
-    purpose = "Whiskey"
+    Name    = "Whiskey_website-${count.index}"
+    Owner   = "Kosta"
+    Purpose = "Whiskey"
   }
 }
