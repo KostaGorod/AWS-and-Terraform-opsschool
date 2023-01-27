@@ -4,4 +4,4 @@ sudo amazon-linux-extras install -y nginx1
 sudo service nginx start
 sudo service ngnix enable 
 sudo rm /usr/share/nginx/html/index.html
-echo "<html><head>${instance_num}</head><body><h1><p style=\"text-align: center;\">Welcome to Grandpa's Whiskey</p></h1></body></html>" | sudo tee /usr/share/nginx/html/index.html
+echo "<html><head><title>${instance_num}</title></head><body><h1><p style=\"text-align: center;\">Welcome to Grandpa's Whiskey</p></h1></body></html>" | sudo tee /usr/share/nginx/html/index.html
