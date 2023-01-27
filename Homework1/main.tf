@@ -1,6 +1,6 @@
 
 
-  # HTTP access from anywhere
+# HTTP access from anywhere
 resource "aws_security_group" "allow_http" {
   name = "allow_http"
 
@@ -22,8 +22,9 @@ resource "aws_security_group" "allow_http" {
 
 resource "aws_instance" "app_server" {
   count                       = var.instance_count
-  ami                         = var.instance_aws_ami
+  ami                         = data.aws_ami.aws_linux2.id
   instance_type               = var.instance_type
+  associate_public_ip_address = true
   security_groups             = [aws_security_group.allow_http.name] #can't be declared by id
   user_data_replace_on_change = true
   ebs_block_device {
@@ -31,11 +32,10 @@ resource "aws_instance" "app_server" {
     volume_size = 10
     encrypted   = true
   }
-  user_data = templatefile("ec2-init-script.tftpl",{ instance_num = "${count.index}"})
+  user_data = templatefile("ec2-init-script.tftpl", { instance_num = "${count.index}" })
 
   tags = {
     Name    = "Whiskey_website-${count.index}"
-    Owner   = "Kosta"
     Purpose = "Whiskey"
   }
 }
