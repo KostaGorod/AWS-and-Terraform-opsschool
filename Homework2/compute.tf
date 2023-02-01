@@ -1,6 +1,6 @@
 resource "aws_instance" "webserver" {
   count                       = var.instance_count
-  subnet_id                   = aws_subnet.public[count.index].id
+  subnet_id                   = aws_subnet.private[count.index].id
   ami                         = data.aws_ami.aws_linux2.id
   instance_type               = var.instance_type
   associate_public_ip_address = true
@@ -25,7 +25,7 @@ resource "aws_instance" "db_server" {
   count                  = var.instance_count
   subnet_id              = aws_subnet.private[count.index].id
   ami                    = data.aws_ami.aws_linux2.id
-  instance_type          = var.instance_type # TODO change to different var
+  instance_type          = var.instance_type # TODO seperate from websver var
   vpc_security_group_ids = [aws_security_group.front_end.id]
 
   tags = {
