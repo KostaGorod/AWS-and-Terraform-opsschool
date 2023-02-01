@@ -7,6 +7,9 @@ data "aws_availability_zones" "available" {
 // Creating the VPC
 resource "aws_vpc" "whiskey" {
   cidr_block = "10.0.0.0/16"
+  tags = {
+    "Name" = "whiskey_vpc"
+  }
 }
 
 // Creating igw
