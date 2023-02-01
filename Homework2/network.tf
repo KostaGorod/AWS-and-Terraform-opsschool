@@ -97,12 +97,12 @@ resource "aws_route_table" "public" {
 // Associating the SBs with the RTs
 resource "aws_route_table_association" "private" {
   count          = 2
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[count.index].id
+  subnet_id      = element(aws_subnet.private[*].id,count.index)
+  route_table_id = element(aws_route_table.private[*].id,count.index)
 }
 resource "aws_route_table_association" "public" {
   count          = 2
-  subnet_id      = aws_subnet.public[count.index].id
+  subnet_id      = element(aws_subnet.public[*].id,count.index)
   route_table_id = aws_route_table.public.id
 }
 
@@ -146,11 +146,11 @@ resource "aws_lb_target_group" "front_end" {
   health_check {
     enabled             = true
     port                = 80
-    interval            = 30
+    interval            = 2
     protocol            = "HTTP"
     path                = "/"
     matcher             = "200"
-    healthy_threshold   = 3
+    healthy_threshold   = 5
     unhealthy_threshold = 3
   }
 }
@@ -159,7 +159,7 @@ resource "aws_lb_target_group" "front_end" {
 resource "aws_lb_target_group_attachment" "front_end" {
   count            = 2
   target_group_arn = aws_lb_target_group.front_end.arn
-  target_id        = aws_instance.webserver[count.index].id
+  target_id        = element(aws_instance.webserver[*].id,count.index)
   port             = 80
 }
 
