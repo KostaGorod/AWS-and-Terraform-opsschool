@@ -20,9 +20,10 @@ resource "aws_internet_gateway" "igw" {
 #TODO use different AZs
 // Creating 2 Public Subnets on 2 AZs
 resource "aws_subnet" "public" {
-  count      = 2
-  vpc_id     = aws_vpc.whiskey.id
-  cidr_block = cidrsubnet(aws_vpc.whiskey.cidr_block, 8, count.index)
+  count             = 2
+  vpc_id            = aws_vpc.whiskey.id
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.whiskey.cidr_block, 8, count.index)
 
   tags = {
     Name = "Whiskey_Public-${count.index}"
@@ -32,9 +33,10 @@ resource "aws_subnet" "public" {
 #TODO use different AZs
 // Creating 2 Private Subnets on 2 AZs
 resource "aws_subnet" "private" {
-  count      = 2
-  vpc_id     = aws_vpc.whiskey.id
-  cidr_block = cidrsubnet(aws_vpc.whiskey.cidr_block, 8, (length(aws_subnet.public) + count.index))
+  count             = 2
+  vpc_id            = aws_vpc.whiskey.id
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block        = cidrsubnet(aws_vpc.whiskey.cidr_block, 8, (length(aws_subnet.public) + count.index))
 
   tags = {
     Name = "Whiskey_Private-${count.index}"
@@ -44,23 +46,21 @@ resource "aws_subnet" "private" {
 
 // Requesting 2 Elastic IPs, 1 for each AZ
 resource "aws_eip" "nat" {
-  count = 2
-  vpc   = true
+  vpc = true
 
   tags = {
-    Name = "Whiskey_eip_nat-${count.index}"
+    Name = "Whiskey_eip_NAT"
   }
 }
 
 
 // Creating 2 NAT GW, deployed on Public SBs
 resource "aws_nat_gateway" "nat" {
-  count         = 2
-  allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
 
   tags = {
-    Name = "Whiskey_NATGW-${count.index}"
+    Name = "Whiskey_NATGW"
   }
 }
 
@@ -72,7 +72,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat[count.index].id
+    gateway_id = aws_nat_gateway.nat.id
   }
 
   tags = {
