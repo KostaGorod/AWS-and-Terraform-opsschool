@@ -146,7 +146,7 @@ resource "aws_lb_target_group" "front_end" {
   health_check {
     enabled             = true
     port                = 80
-    interval            = 2
+    interval            = 10
     protocol            = "HTTP"
     path                = "/"
     matcher             = "200"
