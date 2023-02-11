@@ -1,20 +1,6 @@
 ## VPC
 
-# getting the available AZs
-data "aws_availability_zones" "available" {
-  state = "available"
-}
 
-
-# Creating the VPC
-
-resource "aws_vpc" "vpc" {
-  cidr_block = var.vpc_cidr_block
-
-  tags = {
-    "Name" = "${var.APP_NAME}-vpc-${var.ENV}"
-  }
-}
 
 # Subnets
 
@@ -45,30 +31,10 @@ resource "aws_subnet" "private" {
 }
 
 
-# Internet gateway
-
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.vpc.id
-
-  tags = {
-    "Name" = "${var.APP_NAME}-vpc-gateway-${var.ENV}"
-  }
-}
 
 
-# Creating Public RT
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
 
-  tags = {
-    Name = "${var.APP_NAME}-public-route-table-${var.ENV}"
-  }
-}
 
 resource "aws_route_table" "private" {
   #count  = 2
@@ -96,39 +62,11 @@ resource "aws_route_table_association" "private" {
   # route_table_id = aws_route_table.private.id
 }
 
-resource "aws_route_table_association" "public" {
-  count          = 2
-  subnet_id      = element(aws_subnet.public[*].id, count.index)
-  route_table_id = aws_route_table.public.id
-  # for_each       = aws_subnet.public
-  # subnet_id      = each.value.id
-  # route_table_id = aws_route_table.public.id
-}
 
 
 
 
-# Elastic IP for NAT GW (for private network connectivity)
 
-resource "aws_eip" "nat" {
-  vpc = true
-
-  tags = {
-    Name = "${var.APP_NAME}-NAT-EIP-${var.ENV}"
-  }
-}
-
-
-#
-
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public[0].id
-
-  tags = {
-    Name = "${var.APP_NAME}-NAT-GW-${var.ENV}"
-  }
-}
 
 
 # Creating SG for ALB use for HTTP access
