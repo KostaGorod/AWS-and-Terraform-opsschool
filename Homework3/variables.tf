@@ -11,6 +11,12 @@ variable "instance_type" {
   type        = string
 }
 
+variable "db_instance_type" {
+  description = "The type of the ec2, for example - t2.medium"
+  default     = "t2.micro"
+  type        = string
+}
+
 variable "key_name" {
   default     = "hw3"
   description = "The key name of the Key Pair to use for the instance"
@@ -25,10 +31,10 @@ variable "ubuntu_account_number" {
 
 variable "nginx_instances_count" {
   description = "The number of Nginx instances to create"
-  default     = 1
+  default     = 2
 }
 
-variable "DB_instances_count" {
+variable "db_instances_count" {
   description = "The number of DB instances to create"
   default     = 2
 }
@@ -47,4 +53,11 @@ variable "owner_tag" {
 variable "purpose_tag" {
   default = "Whiskey"
   type    = string
+}
+
+
+variable "internet_cidr_range" {
+  type        = string
+  description = "internet cidr range"
+  default     = "0.0.0.0/0"
 }

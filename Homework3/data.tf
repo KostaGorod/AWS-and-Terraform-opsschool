@@ -14,3 +14,5 @@ data "aws_ami" "ubuntu-22" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 }
+
+data "aws_elb_service_account" "root" {}

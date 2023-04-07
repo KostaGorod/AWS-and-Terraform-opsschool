@@ -4,8 +4,7 @@ variable "vpc_cidr_block" {
 }
 
 variable "common_tags" {
-  type        = string
-  description = "the Application Name, For example - 'Whiskey-Site'"
+  type = map(any)
 }
 
 variable "env_name" {

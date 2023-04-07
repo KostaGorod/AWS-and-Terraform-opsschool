@@ -20,10 +20,10 @@ resource "aws_instance" "nginx" {
   ami                         = data.aws_ami.ubuntu-22.id
   instance_type               = var.instance_type
   key_name                    = var.key_name
-  subnet_id                   = module.vpc_module.public_subnets_id[count.index]
+  subnet_id                   = element(module.vpc_module.public_subnets_id, count.index)
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.nginx_instances_access.id]
-  user_data                   = templatefile("ec2-init-script.tftpl", { instance_num = "${count.index}", vpc_cidr = "${module.vpc_module.vpc_cidr}" })
+  user_data                   = templatefile("ec2-init-script.tftpl", { instance_num = "${count.index}", vpc_cidr = "${module.vpc_module.vpc_cidr_block}" })
   iam_instance_profile        = aws_iam_instance_profile.nginx_instances.name
 
   #   root_block_device {
@@ -40,10 +40,12 @@ resource "aws_instance" "nginx" {
   #   }
 
   tags = {
-    "Name" = "nginx-web-${regex(".$", data.aws_availability_zones.available.names[count.index])}"
+    # Name    = "nginx-web-${regex(".$", data.aws_availability_zones.available.names[count.index])}" # Inconsistent when expanding
+    Name    = "nginx-web-${count.index}"
+    Owner   = "Kosta"
+    Purpose = "whiskey"
   }
 }
-
 ##################
 
 
@@ -52,7 +54,7 @@ resource "aws_security_group" "nginx_instances_access" {
   name   = "nginx-access"
 
   tags = {
-    "Name" = "nginx-access-${module.vpc_module.vpc_id}"
+    Name = "nginx-access-${module.vpc_module.vpc_id}"
   }
 }
 
