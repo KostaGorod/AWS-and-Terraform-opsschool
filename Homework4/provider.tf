@@ -16,8 +16,8 @@ terraform {
 }
 
 provider "aws" {
-  profile = "ec2admin"
-  region  = var.aws_region
+  # profile = "ec2admin"
+  region = var.aws_region
   # shared_config_files      = ["~/.aws/config"]
   # shared_credentials_files = ["~/.aws/credentials"]
   default_tags {
