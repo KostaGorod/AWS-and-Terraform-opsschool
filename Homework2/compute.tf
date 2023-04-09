@@ -16,14 +16,19 @@
 
 // TODO test SSM connection
 resource "aws_instance" "webserver" {
-  count                       = var.instance_count
-  subnet_id                   = element(aws_subnet.private[*].id, count.index)
-  ami                         = data.aws_ami.aws_linux2.id
-  instance_type               = var.instance_type
+  count                = var.instance_count
+  subnet_id            = element(aws_subnet.private[*].id, count.index)
+  ami                  = data.aws_ami.aws_linux2.id
+  instance_type        = var.instance_type
+  iam_instance_profile = "ec2-ssm-access-rule"
+  #key_name                    = aws_key_pair.whiskey_key.key_name
+
   associate_public_ip_address = false
   vpc_security_group_ids      = [aws_security_group.front_end.id]
-  #key_name                    = aws_key_pair.whiskey_key.key_name
+
+
   user_data_replace_on_change = true
+
   ebs_block_device {
     device_name = "/dev/sdf"
     volume_size = 10
@@ -40,12 +45,13 @@ resource "aws_instance" "webserver" {
 
 // TODO finish DB servers
 resource "aws_instance" "db_server" {
-  count                  = var.instance_count
-  subnet_id              = element(aws_subnet.private[*].id, count.index)
-  ami                    = data.aws_ami.aws_linux2.id
-  instance_type          = var.instance_type # TODO seperate from websver var
-  vpc_security_group_ids = [aws_security_group.front_end.id]
+  count                = var.instance_count
+  subnet_id            = element(aws_subnet.private[*].id, count.index)
+  ami                  = data.aws_ami.aws_linux2.id
+  instance_type        = var.instance_type # TODO seperate from websver var
+  iam_instance_profile = "ec2-ssm-access-rule"
   #key_name               = aws_key_pair.whiskey_key.key_name
+  vpc_security_group_ids = [aws_security_group.front_end.id]
   user_data              = file("ec2-db-init-script.tftpl")
   tags = {
     Name    = "db_server-${count.index}"
