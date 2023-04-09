@@ -5,8 +5,8 @@ terraform {
       version = ">= 4.7" #added support for 'user_data_replace_on_change'
     }
   }
-  backend "remote" {
-    hostname     = "app.terraform.io"
+  cloud {
+    # hostname     = "app.terraform.io"
     organization = "kosta"
 
     workspaces {
